@@ -30,6 +30,7 @@ class Extension(Plugin):
 
     async def on_reload(self) -> None:
         """Load apps configuration from config file."""
+        self.log.debug(f"Reloading hdrop plugin with config: {self.config}")
         self.apps = self.config["apps"]
         self.log.debug("Loaded %d hdrop apps from config", len(self.apps))
 
