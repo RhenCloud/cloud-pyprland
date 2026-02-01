@@ -27,11 +27,10 @@ class Extension(Plugin):
     def __init__(self, name: str) -> None:
         """Initialize hdrop extension."""
         super().__init__(name)
-        self.apps: dict[str, dict[str, Any]] = {}
 
     async def on_reload(self) -> None:
         """Load apps configuration from config file."""
-        self.apps = cast("dict[str, dict[str, Any]]", self.config["apps"])
+        self.apps = self.config["apps"]
         self.log.debug("Loaded %d hdrop apps from config", len(self.apps))
 
     def _get_app_config(self, app_name: str) -> dict[str, Any]:
