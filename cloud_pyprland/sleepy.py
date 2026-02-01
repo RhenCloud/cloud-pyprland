@@ -14,11 +14,10 @@ class Extension(Plugin):
     def __init__(self, name: str) -> None:
         super().__init__(name)
         self._conf_name = name.split(":", 1)[1] if ":" in name else name
-        config = self.load_config()
-        self.base_api_url = config.get("server_url", "")
-        self.device_name = config.get("device_name", "")
-        self.device_id = config.get("device_id", "")
-        self.token = config.get("token", "")
+        self.base_api_url = ""
+        self.device_name = ""
+        self.device_id = ""
+        self.token = ""
 
     async def load_config(self, config: dict[str, Any]) -> None:  # type: ignore[override]
         """Load configuration using base section name."""
@@ -27,6 +26,14 @@ class Extension(Plugin):
             self.config.update(config[self._conf_name])
         if self.config_schema:
             self.config.set_schema(self.config_schema)
+
+    async def on_reload(self) -> None:
+        """Apply configuration values after config is (re)loaded."""
+        # Ensure the instance attributes reflect current config
+        self.base_api_url = self.config.get("server_url", "")
+        self.device_name = self.config.get("device_name", "")
+        self.device_id = self.config.get("device_id", "")
+        self.token = self.config.get("token", "")
 
     environments = ["hyprland"]
 
