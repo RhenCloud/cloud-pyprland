@@ -200,15 +200,23 @@ class Extension(Plugin):
     async def _is_window_in_hdrop(self, class_name: str) -> bool:
         """Check if a window is in the hdrop workspace."""
         clients = await self.get_clients()
-        return any(cast("str", c["class"]) == class_name and cast("str", c["workspace"]["name"]) == "special:hdrop" for c in clients)
+        return any(
+            cast("str", c["class"]) == class_name
+            and cast("str", c["workspace"]["name"]) == "special:hdrop"
+            for c in clients
+        )
 
     async def _move_window_to_hdrop(self, class_name: str) -> None:
         """Move a window to the hdrop scratchpad."""
-        await self.backend.execute(f"movetoworkspacesilent special:hdrop,class:{class_name}")
+        await self.backend.execute(
+            f"movetoworkspacesilent special:hdrop,class:{class_name}"
+        )
 
     async def _move_window_to_active_workspace(self, class_name: str) -> None:
         """Move a window to the active workspace."""
-        workspace = cast("dict[str, Any]", await self.backend.execute_json("activeworkspace"))
+        workspace = cast(
+            "dict[str, Any]", await self.backend.execute_json("activeworkspace")
+        )
         workspace_id = cast("int", workspace["id"])
         await self.backend.execute(f"movetoworkspace {workspace_id},class:{class_name}")
 
@@ -227,7 +235,12 @@ class Extension(Plugin):
         launch_on_missing = opts.launch_on_missing
 
         # Launch command if needed and window doesn't exist and allowed by config
-        if not skip_flag and command is not None and not await self._is_window_exists(class_name) and launch_on_missing:
+        if (
+            not skip_flag
+            and command is not None
+            and not await self._is_window_exists(class_name)
+            and launch_on_missing
+        ):
             await self.backend.execute(f"exec {command}")
             await asyncio.sleep(0.5)
             # Recursively call with skip=True
@@ -250,7 +263,9 @@ class Extension(Plugin):
                 # Window is in hdrop, bring it to active workspace
                 await self._move_window_to_active_workspace(class_name)
                 if floating_flag:
-                    await self._configure_floating_window(class_name, height, width, center_flag)
+                    await self._configure_floating_window(
+                        class_name, height, width, center_flag
+                    )
             elif focus_flag:
                 # Just focus the window
                 await self.backend.execute(f"focuswindow class:{class_name}")
@@ -269,19 +284,26 @@ class Extension(Plugin):
         # Ensure floating mode for the window(s)
         clients = await self.get_clients()
         target_clients = [
-            c for c in clients if cast("str", c["class"]) == class_name and cast("str", c["workspace"]["name"]) != "special:hdrop"
+            c
+            for c in clients
+            if cast("str", c["class"]) == class_name
+            and cast("str", c["workspace"]["name"]) != "special:hdrop"
         ]
 
         if target_clients:
             for client in target_clients:
                 if not cast("bool", client["floating"]):
-                    await self.backend.execute(f"togglefloating address:{client['address']}")
+                    await self.backend.execute(
+                        f"togglefloating address:{client['address']}"
+                    )
         else:
             await self.backend.execute(f"togglefloating class:{class_name}")
 
         # Resize if dimensions provided
         if height is not None and width is not None:
-            await self.backend.execute(f"resizewindowpixel exact {width} {height},class:{class_name}")
+            await self.backend.execute(
+                f"resizewindowpixel exact {width} {height},class:{class_name}"
+            )
 
         # Center the window if requested
         if center_flag:

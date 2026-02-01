@@ -64,20 +64,33 @@ class Extension(Plugin):
 
     async def _set_status(self, app_name: str):
         """Pass the active app name to sleepy server."""
+        # Ensure required configuration is present
+        if not (self.device_id and self.device_name and self.base_api_url):
+            await self.log.error(
+                "Missing sleepy configuration: device_id/device_name/server_url"
+            )
+            return
 
         json_body = {
-            "id": self.config["device_id"],
-            "show_name": self.config["device_name"],
+            "id": self.device_id,
+            "show_name": self.device_name,
             "using": True,
             "status": app_name,
         }
 
+        headers: dict[str, str] = {}
+        if self.token:
+            headers["Authorization"] = f"Bearer {self.token}"
+
         async with aiohttp.ClientSession() as session:
             async with session.post(
-                f"{self.config['server_url']}/api/device/set",
+                f"{self.base_api_url}/api/device/set",
                 json=json_body,
+                headers=headers or None,
             ) as response:
                 if response.status == 200:
                     await self.log.debug(f"Set status to {app_name} successfully.")
                 else:
-                    await self.log.error(f"Failed to set status to {app_name}.")
+                    await self.log.error(
+                        f"Failed to set status to {app_name}. HTTP {response.status}"
+                    )
