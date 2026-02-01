@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Any, cast
 
 from pyprland.plugins.interface import Plugin
+from pyprland.validation import ConfigField
 
 
 @dataclass
@@ -23,6 +24,8 @@ class HdropOptions:
 
 class Extension(Plugin):
     """Hdrop - Quick window dropdown/scratchpad functionality."""
+
+    config_schema = [ConfigField("apps", dict, default={})]
 
     def __init__(self, name: str) -> None:
         """Initialize hdrop extension."""

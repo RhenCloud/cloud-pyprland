@@ -9,10 +9,10 @@ class Extension(Plugin):
     """A plugin to push app information to sleepy server."""
 
     config_schema = [
-        ConfigField("server_url", str, default="", required=True),
-        ConfigField("device_name", str, default="", required=True),
-        ConfigField("device_id", str, default="", required=True),
-        ConfigField("token", str, default="", required=True),
+        ConfigField("server_url", str, default=""),
+        ConfigField("device_name", str, default=""),
+        ConfigField("device_id", str, default=""),
+        ConfigField("token", str, default=""),
     ]
 
     def __init__(self, name: str) -> None:
