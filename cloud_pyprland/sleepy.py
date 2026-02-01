@@ -17,27 +17,14 @@ class Extension(Plugin):
 
     def __init__(self, name: str) -> None:
         super().__init__(name)
-        # self._conf_name = name.split(":", 1)[1] if ":" in name else name
-        # self.base_api_url = ""
-        # self.device_name = ""
-        # self.device_id = ""
-        # self.token = ""
-
-    # async def load_config(self, config: dict[str, Any]) -> None:  # type: ignore[override]
-    #     """Load configuration using base section name."""
-    #     self.config.clear()
-    #     with contextlib.suppress(KeyError):
-    #         self.config.update(config[self._conf_name])
-    #     if self.config_schema:
-    #         self.config.set_schema(self.config_schema)
 
     async def on_reload(self) -> None:
         """Apply configuration values after config is (re)loaded."""
         # Ensure the instance attributes reflect current config
-        self.base_api_url = self.config.get("server_url", "")
-        self.device_name = self.config.get("device_name", "")
-        self.device_id = self.config.get("device_id", "")
-        self.token = self.config.get("token", "")
+        self.server_url = self["server_url"]
+        self.device_name = self["device_name"]
+        self.device_id = self["device_id"]
+        self.token = self["token"]
 
     environments = ["hyprland"]
 
@@ -62,7 +49,7 @@ class Extension(Plugin):
     async def _set_status(self, app_name: str):
         """Pass the active app name to sleepy server."""
         # Ensure required configuration is present
-        if not (self.device_id and self.device_name and self.base_api_url):
+        if not (self.device_id and self.device_name and self.server_url):
             self.log.error(
                 "Missing sleepy configuration: device_id/device_name/server_url"
             )
@@ -81,7 +68,7 @@ class Extension(Plugin):
 
         async with aiohttp.ClientSession() as session:
             async with session.post(
-                f"{self.base_api_url}/api/device/set",
+                f"{self.server_url}/api/device/set",
                 json=json_body,
                 headers=headers or None,
             ) as response:
