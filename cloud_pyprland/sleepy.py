@@ -1,31 +1,35 @@
 """A plugin to push app information to sleepy server."""
 
-import contextlib
-from typing import Any
-
 import aiohttp
 from pyprland.plugins.interface import Plugin
-from pyprland.validation import ConfigField, ConfigItems
+from pyprland.validation import ConfigField
 
 
 class Extension(Plugin):
     """A plugin to push app information to sleepy server."""
 
+    config_schema = [
+        ConfigField("server_url", str, default="", required=True),
+        ConfigField("device_name", str, default="", required=True),
+        ConfigField("device_id", str, default="", required=True),
+        ConfigField("token", str, default="", required=True),
+    ]
+
     def __init__(self, name: str) -> None:
         super().__init__(name)
-        self._conf_name = name.split(":", 1)[1] if ":" in name else name
-        self.base_api_url = ""
-        self.device_name = ""
-        self.device_id = ""
-        self.token = ""
+        # self._conf_name = name.split(":", 1)[1] if ":" in name else name
+        # self.base_api_url = ""
+        # self.device_name = ""
+        # self.device_id = ""
+        # self.token = ""
 
-    async def load_config(self, config: dict[str, Any]) -> None:  # type: ignore[override]
-        """Load configuration using base section name."""
-        self.config.clear()
-        with contextlib.suppress(KeyError):
-            self.config.update(config[self._conf_name])
-        if self.config_schema:
-            self.config.set_schema(self.config_schema)
+    # async def load_config(self, config: dict[str, Any]) -> None:  # type: ignore[override]
+    #     """Load configuration using base section name."""
+    #     self.config.clear()
+    #     with contextlib.suppress(KeyError):
+    #         self.config.update(config[self._conf_name])
+    #     if self.config_schema:
+    #         self.config.set_schema(self.config_schema)
 
     async def on_reload(self) -> None:
         """Apply configuration values after config is (re)loaded."""
@@ -36,13 +40,6 @@ class Extension(Plugin):
         self.token = self.config.get("token", "")
 
     environments = ["hyprland"]
-
-    config_schema = ConfigItems(
-        ConfigField("server_url", str, default="", required=True),
-        ConfigField("device_name", str, default="", required=True),
-        ConfigField("device_id", str, default="", required=True),
-        ConfigField("token", str, default="", required=True),
-    )
 
     async def event_activewindowv2(self, _addr: str) -> None:
         """Push app information to sleepy server.
@@ -66,7 +63,7 @@ class Extension(Plugin):
         """Pass the active app name to sleepy server."""
         # Ensure required configuration is present
         if not (self.device_id and self.device_name and self.base_api_url):
-            await self.log.error(
+            self.log.error(
                 "Missing sleepy configuration: device_id/device_name/server_url"
             )
             return
@@ -89,8 +86,8 @@ class Extension(Plugin):
                 headers=headers or None,
             ) as response:
                 if response.status == 200:
-                    await self.log.debug(f"Set status to {app_name} successfully.")
+                    self.log.debug(f"Set status to {app_name} successfully.")
                 else:
-                    await self.log.error(
+                    self.log.error(
                         f"Failed to set status to {app_name}. HTTP {response.status}"
                     )
