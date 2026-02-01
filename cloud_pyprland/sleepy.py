@@ -21,10 +21,10 @@ class Extension(Plugin):
     async def on_reload(self) -> None:
         """Apply configuration values after config is (re)loaded."""
         # Ensure the instance attributes reflect current config
-        self.server_url = self["server_url"]
-        self.device_name = self["device_name"]
-        self.device_id = self["device_id"]
-        self.token = self["token"]
+        self.server_url = self.config["server_url"]
+        self.device_name = self.config["device_name"]
+        self.device_id = self.config["device_id"]
+        self.token = self.config["token"]
 
     environments = ["hyprland"]
 
