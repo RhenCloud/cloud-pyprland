@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from typing import Any, cast
 
 from pyprland.plugins.interface import Plugin
-from pyprland.validation import ConfigField
 
 
 @dataclass
@@ -25,7 +24,7 @@ class HdropOptions:
 class Extension(Plugin):
     """Hdrop - Quick window dropdown/scratchpad functionality."""
 
-    config_schema = [ConfigField("apps", dict, default={})]
+    # config_schema = [ConfigField("apps", dict, default={})]
 
     def __init__(self, name: str) -> None:
         """Initialize hdrop extension."""
@@ -34,7 +33,15 @@ class Extension(Plugin):
     async def on_reload(self) -> None:
         """Load apps configuration from config file."""
         self.log.debug(f"Reloading hdrop plugin with config: {self.config}")
-        self.apps = self.config["apps"]
+        # Only support per-app subtables, e.g. [hdrop.wechat] or
+        # [cloud_pyprland.hdrop.wechat]. Collect any dict-valued subtables
+        # under this plugin's config section as apps.
+        apps: dict[str, dict[str, Any]] = {}
+        for name, conf in self.config.items():
+            if isinstance(conf, dict):
+                apps[name] = conf
+
+        self.apps = apps
         self.log.debug("Loaded %d hdrop apps from config", len(self.apps))
 
     def _get_app_config(self, app_name: str) -> dict[str, Any]:
