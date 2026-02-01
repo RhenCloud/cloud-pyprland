@@ -1,7 +1,6 @@
 """Hdrop - Quick window dropdown/scratchpad functionality."""
 
 import asyncio
-import contextlib
 from dataclasses import dataclass
 from typing import Any, cast
 
@@ -28,25 +27,11 @@ class Extension(Plugin):
     def __init__(self, name: str) -> None:
         """Initialize hdrop extension."""
         super().__init__(name)
-        # Normalize config section name so external:hdrop still reads [hdrop]
-        self._conf_name = name.split(":", 1)[1] if ":" in name else name
         self.apps: dict[str, dict[str, Any]] = {}
-
-    async def load_config(self, config: dict[str, Any]) -> None:
-        """Load the plugin configuration using the base section name.
-
-        This allows the plugin to be loaded as `external:hdrop` while still
-        reading configuration from `[hdrop]` in the user's config file.
-        """
-        self.config.clear()
-        with contextlib.suppress(KeyError):
-            self.config.update(config[self._conf_name])
-        if self.config_schema:
-            self.config.set_schema(self.config_schema)
 
     async def on_reload(self) -> None:
         """Load apps configuration from config file."""
-        self.apps = cast("dict[str, dict[str, Any]]", self.config.get("apps", {}))
+        self.apps = cast("dict[str, dict[str, Any]]", self.config["apps"])
         self.log.debug("Loaded %d hdrop apps from config", len(self.apps))
 
     def _get_app_config(self, app_name: str) -> dict[str, Any]:
