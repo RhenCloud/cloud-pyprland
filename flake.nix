@@ -21,8 +21,9 @@
             pkgs.python3Packages.poetry-core
           ];
 
-          propagatedBuildInputs = with pkgs.python3Packages; [
-            requests
+          propagatedBuildInputs = with pkgs; [
+            python3Packages.requests
+            pyprland
           ];
 
           meta = with pkgs.lib; {
