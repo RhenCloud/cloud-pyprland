@@ -10,28 +10,31 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; };
-        python = pkgs.python312;
-      in
-      {
-        packages.default = python.pkgs.buildPythonPackage {
+        pythonPkg = pkgs.python3Packages.buildPythonPackage rec {
           pname = "cloud-pyprland";
           version = "0.1.0";
           pyproject = true;
+          # 自动读取 pyproject.toml/源代码
           src = ./.;
 
-          nativeBuildInputs = with python.pkgs; [ poetry-core ];
-          propagatedBuildInputs = with python.pkgs; [
+          nativeBuildInputs = [
+            pkgs.python3Packages.poetry-core
+          ];
+
+          propagatedBuildInputs = with pkgs.python3Packages; [
             requests
           ];
 
-          pythonImportsCheck = [ "cloud_pyprland" ];
+          meta = with pkgs.lib; {
+            description = "RhenCloud's plugins for pyprland";
+            license = licenses.mit;
+            maintainers = [ maintainers.something ];
+          };
         };
-
-        devShells.default = pkgs.mkShell {
-          packages = [
-            python
-            pkgs.poetry
-          ];
-        };
+      in
+      {
+        packages.default = pythonPkg;
       });
 }
+
+
