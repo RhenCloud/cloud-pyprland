@@ -140,7 +140,7 @@ class Extension(Plugin):
         if await self._is_window_in_hdrop(class_name):
             await self._move_window_to_active_workspace(class_name)
         else:
-            await self.backend.execute(f"focuswindow class:{class_name}")
+            await self.hyprctl(f"focuswindow class:{class_name}")
         return None
 
     async def run_show(self, args: str) -> str | None:
@@ -203,17 +203,17 @@ class Extension(Plugin):
 
     async def _move_window_to_hdrop(self, class_name: str) -> None:
         """Move a window to the hdrop scratchpad."""
-        await self.backend.execute(
+        await self.hyprctl(
             f"movetoworkspacesilent special:hdrop,class:{class_name}"
         )
 
     async def _move_window_to_active_workspace(self, class_name: str) -> None:
         """Move a window to the active workspace."""
         workspace = cast(
-            "dict[str, Any]", await self.backend.execute_json("activeworkspace")
+            "dict[str, Any]", await self.hyprctl_json("activeworkspace")
         )
         workspace_id = cast("int", workspace["id"])
-        await self.backend.execute(f"movetoworkspace {workspace_id},class:{class_name}")
+        await self.hyprctl(f"movetoworkspace {workspace_id},class:{class_name}")
 
     async def _handle_window(self, class_name: str, opts: HdropOptions) -> None:
         """Handle window display/hide logic.
@@ -236,7 +236,7 @@ class Extension(Plugin):
             and not await self._is_window_exists(class_name)
             and launch_on_missing
         ):
-            await self.backend.execute(f"exec {command}")
+            await self.hyprctl(f"exec {command}")
             await asyncio.sleep(0.5)
             # Recursively call with skip=True
             new_opts = HdropOptions(
@@ -263,7 +263,7 @@ class Extension(Plugin):
                     )
             elif focus_flag:
                 # Just focus the window
-                await self.backend.execute(f"focuswindow class:{class_name}")
+                await self.hyprctl(f"focuswindow class:{class_name}")
             else:
                 # Hide window to hdrop
                 await self._move_window_to_hdrop(class_name)
@@ -288,18 +288,18 @@ class Extension(Plugin):
         if target_clients:
             for client in target_clients:
                 if not cast("bool", client["floating"]):
-                    await self.backend.execute(
+                    await self.hyprctl(
                         f"togglefloating address:{client['address']}"
                     )
         else:
-            await self.backend.execute(f"togglefloating class:{class_name}")
+            await self.hyprctl(f"togglefloating class:{class_name}")
 
         # Resize if dimensions provided
         if height is not None and width is not None:
-            await self.backend.execute(
+            await self.hyprctl(
                 f"resizewindowpixel exact {width} {height},class:{class_name}"
             )
 
         # Center the window if requested
         if center_flag:
-            await self.backend.execute(f"centerwindow class:{class_name}")
+            await self.hyprctl(f"centerwindow class:{class_name}")

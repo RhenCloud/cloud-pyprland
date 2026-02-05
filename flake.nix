@@ -23,7 +23,7 @@
 
           propagatedBuildInputs = with pkgs; [
             python3Packages.requests
-            pyprland
+            # pyprland
           ];
 
           meta = with pkgs.lib; {

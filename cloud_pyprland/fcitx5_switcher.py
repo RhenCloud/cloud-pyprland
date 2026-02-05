@@ -91,7 +91,7 @@ class Extension(Plugin):
                         cls,
                         title,
                     )
-                    ok = await self.backend.execute("execr fcitx5-remote -o")
+                    ok = await self.hyprctl("execr fcitx5-remote -o")
                     self.log.debug("fcitx5_switcher: execute returned %s", ok)
                 if should_disable:
                     self.log.debug(
@@ -99,5 +99,5 @@ class Extension(Plugin):
                         cls,
                         title,
                     )
-                    ok = await self.backend.execute("execr fcitx5-remote -c")
+                    ok = await self.hyprctl("execr fcitx5-remote -c")
                     self.log.debug("fcitx5_switcher: execute returned %s", ok)
