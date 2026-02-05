@@ -5,38 +5,38 @@
 import re
 
 from pyprland.plugins.interface import Plugin
-from pyprland.validation import ConfigField
+# from pyprland.validation import ConfigField
 
 
 class Extension(Plugin):
     """Auto-switch Fcitx5 input method status by window class/title."""
 
-    config_schema = [
-        ConfigField(
-            "active_classes",
-            list,
-            default=[],
-            description="Window classes that should activate Fcitx5",
-        ),
-        ConfigField(
-            "active_titles",
-            list,
-            default=[],
-            description="Window titles that should activate Fcitx5",
-        ),
-        ConfigField(
-            "inactive_classes",
-            list,
-            default=[],
-            description="Window classes that should deactivate Fcitx5",
-        ),
-        ConfigField(
-            "inactive_titles",
-            list,
-            default=[],
-            description="Window titles that should deactivate Fcitx5",
-        ),
-    ]
+    # config_schema = [
+    #     ConfigField(
+    #         "active_classes",
+    #         list,
+    #         default=[],
+    #         description="Window classes that should activate Fcitx5",
+    #     ),
+    #     ConfigField(
+    #         "active_titles",
+    #         list,
+    #         default=[],
+    #         description="Window titles that should activate Fcitx5",
+    #     ),
+    #     ConfigField(
+    #         "inactive_classes",
+    #         list,
+    #         default=[],
+    #         description="Window classes that should deactivate Fcitx5",
+    #     ),
+    #     ConfigField(
+    #         "inactive_titles",
+    #         list,
+    #         default=[],
+    #         description="Window titles that should deactivate Fcitx5",
+    #     ),
+    # ]
 
     def __init__(self, name: str) -> None:
         super().__init__(name)
