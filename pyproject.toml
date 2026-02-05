@@ -7,7 +7,7 @@ authors = [{ name = "RhenCloud", email = "i@rhen.cloud" }]
 readme = "README.md"
 
 
-dependencies = ["pyprland>=2.32.5", "requests>=2.32.5,<3.0.0"]
+dependencies = ["pyprland>=2.6", "requests>=2.32.5,<3.0.0"]
 
 
 [build-system]
