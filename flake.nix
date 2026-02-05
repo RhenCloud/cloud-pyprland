@@ -21,7 +21,6 @@
 
           nativeBuildInputs = with python.pkgs; [ poetry-core ];
           propagatedBuildInputs = with python.pkgs; [
-            pyprland
             requests
           ];
 
