@@ -50,10 +50,10 @@ class Extension(Plugin):
         """
         _addr = "0x" + _addr
 
-        active_classes = self.get_config_list("active_classes")
-        active_titles = self.get_config_list("active_titles")
-        inactive_classes = self.get_config_list("inactive_classes")
-        inactive_titles = self.get_config_list("inactive_titles")
+        active_classes = self.config.get("active_classes")
+        active_titles = self.config.get("active_titles")
+        inactive_classes = self.config.get("inactive_classes")
+        inactive_titles = self.config.get("inactive_titles")
 
         clients = await self.get_clients()
 
